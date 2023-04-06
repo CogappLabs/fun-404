@@ -1,19 +1,19 @@
+// import OpenSeadragon from '/openseadragon/openseadragon';
+
 // Get the container and button elements
 let container = document.querySelector('#sunrise-container');
 let btn = document.querySelector('#btn');
-
+let artworkURL;
+let viewer;
 
 // Make an API call 
 async function getArtwork () {
     try {
-
-
         // Run an API call 
         // Create an empty variable to store the response in
         let response;
 
         response = await fetch('https://api.artic.edu/api/v1/artworks/search?query[term][has_not_been_viewed_much]=true&limit=100&page=10&fields=has_not_been_viewed_much,title,image_id,id');
-        // response = await fetch('https://api.artic.edu/api/v1/artworks?fields=title,image_id,has_not_been_viewed_much,id/search?query[term][has_not_been_viewed_much]=true?page=100&limit=100');
 
         // If the call failed, throw an error
         if (!response.ok) {
@@ -35,9 +35,16 @@ async function getArtwork () {
 
         let artwork  = randomArtwork();
 
-        console.log('https://www.artic.edu/iiif/2/' + artwork.image_id + '/full/843,/0/default.jpg');
+        console.log(artwork.id);
 
-        return 'https://www.artic.edu/iiif/2/' + artwork.image_id + '/full/843,/0/default.jpg';
+        viewer = OpenSeadragon({
+            id: "openseadragon1",
+            prefixUrl: "/openseadragon/images/",
+            // tileSources: 'https://www.artic.edu/iiif/2/' + artwork.id + '/full/843,/0/default.jpg',
+            tileSources: 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json',
+        });
+
+        return viewer;
 
     } catch (error) {
         container.textContent = '[Something went wrong, sorry!]';
@@ -45,5 +52,9 @@ async function getArtwork () {
     }
 }
 
-// When the button is clicked, get the sun data
-btn.addEventListener('click', getArtwork);
+// On page load, get a random artwork 
+document.addEventListener('DOMContentLoaded', getArtwork);
+
+
+
+
