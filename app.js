@@ -3,6 +3,9 @@ const radioYes = document.getElementById("yes");
 const radioNo = document.getElementById("no");
 const textInput = document.getElementById("textInput");
 const caption = document.getElementById("caption");
+const title = document.getElementById("artwork-title");
+const container = document.getElementById("container");
+let viewer;
 
 // Add event listener to the radio button
 radioYes.addEventListener("click", function () {
@@ -33,7 +36,7 @@ async function getArtwork () {
 
         // If the call failed, throw an error
         if (!response.ok) {
-        throw 'Something went wrong.';
+            throw 'Something went wrong.';
         }
 
         // Otherwise, get the post JSON
@@ -50,9 +53,6 @@ async function getArtwork () {
         }
 
         let artwork  = randomArtwork();
-
-        console.log(artwork.id);
-
 
         let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
 
@@ -77,7 +77,7 @@ async function getArtwork () {
             }];
 
             // Create the OpenSeadragon viewer with the IIIF manifest as the tile source
-            var viewer = OpenSeadragon({
+            viewer = OpenSeadragon({
                 id: 'openseadragon1',
                 prefixUrl: '/openseadragon/images/',
                 crossOriginPolicy: 'Anonymous',
@@ -95,6 +95,8 @@ async function getArtwork () {
             });
         })
         .catch(error => console.error(error));
+
+        title.textContent = artwork.title;
 
         return viewer;
 
