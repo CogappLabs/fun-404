@@ -64,6 +64,17 @@ async function getArtwork () {
             var viewer = OpenSeadragon({
                 id: 'openseadragon1',
                 prefixUrl: '/openseadragon/images/',
+                crossOriginPolicy: 'Anonymous',
+                showSequenceControl: false,
+                showHomeControl: false,
+                showZoomControl: false,
+                showFullPageControl: false,
+                visibilityRatio: 0.3,
+                homeFillsViewer: false,
+                autoHideControls: true,
+                showNavigator: true,
+                navigatorPosition: 'TOP_LEFT',
+                navigatorAutoFade: true,
                 tileSources: tileSources
             });
         })
