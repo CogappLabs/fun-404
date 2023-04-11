@@ -37,12 +37,37 @@ async function getArtwork () {
 
         console.log(artwork.id);
 
-        viewer = OpenSeadragon({
-            id: "openseadragon1",
-            prefixUrl: "/openseadragon/images/",
-            // tileSources: 'https://www.artic.edu/iiif/2/' + artwork.id + '/full/843,/0/default.jpg',
-            tileSources: 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json',
-        });
+
+        let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
+
+        // Fetch the IIIF manifest
+        fetch(manifestUrl)
+        .then(response => response.json())
+        .then(manifest => {
+            // Extract the image URL and tile information from the manifest
+            var imageUrl = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["@id"];
+            var tileWidth = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["width"];
+            var tileHeight = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["height"];
+            
+            // Construct the OpenSeadragon tileSources object
+            var tileSources = [{
+                type: 'image',
+                url: imageUrl,
+                buildPyramid: false,
+                tileSize: tileWidth,
+                tileOverlap: 0,
+                width: tileWidth,
+                height: tileHeight
+            }];
+
+            // Create the OpenSeadragon viewer with the IIIF manifest as the tile source
+            var viewer = OpenSeadragon({
+                id: 'openseadragon1',
+                prefixUrl: '/openseadragon/images/',
+                tileSources: tileSources
+            });
+        })
+        .catch(error => console.error(error));
 
         return viewer;
 
