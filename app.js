@@ -1,10 +1,26 @@
-// import OpenSeadragon from '/openseadragon/openseadragon';
+// Get the radio button and text input element
+const radioYes = document.getElementById("yes");
+const radioNo = document.getElementById("no");
+const textInput = document.getElementById("textInput");
+const caption = document.getElementById("caption");
 
-// Get the container and button elements
-let container = document.querySelector('#sunrise-container');
-let btn = document.querySelector('#btn');
-let artworkURL;
-let viewer;
+// Add event listener to the radio button
+radioYes.addEventListener("click", function () {
+    if (radioYes.checked) {
+        textInput.style.display = "block";
+        caption.style.display = "block";
+    } else {
+        textInput.style.display = "none";
+        caption.style.display = "none";
+    }
+});
+
+radioNo.addEventListener("click", function () {
+    if (radioNo.checked) {
+        textInput.style.display = "none";
+        caption.style.display = "none";
+    }
+});
 
 // Make an API call 
 async function getArtwork () {
