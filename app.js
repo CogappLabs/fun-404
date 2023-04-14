@@ -17,10 +17,6 @@ const submit = document.getElementById("submit");
 // Get the form element
 let form = document.querySelector('#form');
 
-    // Get all of the fields in the form
-    let fields = form.elements;
-    console.log(fields.yes.checked);
-
 // Add event listener to the radio button
 radioYes.addEventListener("click", function () {
     if (radioYes.checked) {
