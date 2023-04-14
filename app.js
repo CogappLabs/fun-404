@@ -32,7 +32,7 @@ radioYes.addEventListener("click", function () {
 radioNo.addEventListener("click", function () {
     if (radioNo.checked) {
         caption.style.display = "none";
-        caption.style.display = "none";
+        captionLabel.style.display = "none";
     }
 });
 
