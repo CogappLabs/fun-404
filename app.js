@@ -19,7 +19,7 @@ let form = document.querySelector('#form');
     let fields = form.elements;
     console.log(fields.yes.checked);
 
-let storedArtworks = [];
+let storedArtworks = {};
 
 // Add event listener to the radio button
 radioYes.addEventListener("click", function () {
@@ -42,6 +42,9 @@ radioNo.addEventListener("click", function () {
 // Make an API call to get a random artwork and display in OSD 
 async function getArtwork () {
     try {
+        // Get current storedArtworks
+        storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+
         // Run an API call 
         // Create an empty variable to store the response in
         let response;
@@ -59,7 +62,8 @@ async function getArtwork () {
         function randomArtwork() {
             let random = data.data[Math.floor(Math.random()*data.data.length)];
 
-            if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960') {
+            // Check that the image_id isn't the archive image and make sure the ID isn't already a key in storedArtworks
+            if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' && !storedArtworks.hasOwnProperty(random.id)) {
                 return random;
             } else {
                 return randomArtwork();
@@ -130,7 +134,11 @@ function storeArtwork() {
     if (fields.no.checked) {
         return;
     } else {
+        storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+
         let approvedArtwork = {};
+
+        let id;
 
         approvedArtwork['has_not_been_viewed_much'] = true;
     
@@ -147,6 +155,7 @@ function storeArtwork() {
             }
     
             if (field.id == 'artwork-id') {
+                id = field.value;
                 approvedArtwork['id'] = field.value;
             }
     
@@ -157,13 +166,9 @@ function storeArtwork() {
             if (field.id == 'caption') {
                 approvedArtwork['caption'] = field.value;
             }
-            
-    
-            // Save field to localStorage
-            // localStorage.setItem(prefix + field.id, field.value);
         }
     
-        storedArtworks.push({approvedArtwork: approvedArtwork});
+        storedArtworks[id] = approvedArtwork;
     
         localStorage.setItem('approvedArtworks', JSON.stringify(storedArtworks));
     }
