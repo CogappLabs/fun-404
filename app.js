@@ -136,80 +136,53 @@ async function getArtwork () {
     }
 }
 
-function getStoredArtwork() {
-    // Get current storedArtworks
-    let keys;
-    let randomIndex;
-    let randomKey;
-    let artwork;
+function getStoredArtwork(artwork) {
+    let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
 
-    if (localStorage.getItem('approvedArtworks')) {
-        storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+    // Fetch the IIIF manifest
+    fetch(manifestUrl)
+    .then(response => response.json())
+    .then(manifest => {
+        // Extract the image URL and tile information from the manifest
+        var imageUrl = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["@id"];
+        var tileWidth = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["width"];
+        var tileHeight = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["height"];
+        
+        // Construct the OpenSeadragon tileSources object
+        var tileSources = [{
+            type: 'image',
+            url: imageUrl,
+            buildPyramid: false,
+            tileSize: tileWidth,
+            tileOverlap: 0,
+            width: tileWidth,
+            height: tileHeight
+        }];
 
-        // Convert object keys to an array
-        keys = Object.keys(storedArtworks);
+        // Create the OpenSeadragon viewer with the IIIF manifest as the tile source
+        viewer = OpenSeadragon({
+            id: 'openseadragon2',
+            prefixUrl: '/openseadragon/images/',
+            crossOriginPolicy: 'Anonymous',
+            showSequenceControl: false,
+            showHomeControl: false,
+            showZoomControl: false,
+            showFullPageControl: false,
+            visibilityRatio: 0.3,
+            homeFillsViewer: false,
+            autoHideControls: true,
+            showNavigator: true,
+            navigatorPosition: 'TOP_LEFT',
+            navigatorAutoFade: true,
+            tileSources: tileSources
+        });
+    })
+    .catch(error => console.error(error));
 
-        // Generate a random index
-        randomIndex = Math.floor(Math.random() * keys.length);
+    title2.textContent = artwork.title;
+    captionDisplay.textContent = artwork.caption;
 
-        // Get the randomly selected key
-        randomKey = keys[randomIndex];
-
-        // Get the value associated with the randomly selected key
-        artwork = storedArtworks[randomKey];
-    }
-
-    if (!artwork) {
-        console.log('no artwork');
-        location.reload();
-    } else {
-        let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
-
-        // Fetch the IIIF manifest
-        fetch(manifestUrl)
-        .then(response => response.json())
-        .then(manifest => {
-            // Extract the image URL and tile information from the manifest
-            var imageUrl = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["@id"];
-            var tileWidth = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["width"];
-            var tileHeight = manifest["sequences"][0]["canvases"][0]["images"][0]["resource"]["height"];
-            
-            // Construct the OpenSeadragon tileSources object
-            var tileSources = [{
-                type: 'image',
-                url: imageUrl,
-                buildPyramid: false,
-                tileSize: tileWidth,
-                tileOverlap: 0,
-                width: tileWidth,
-                height: tileHeight
-            }];
-    
-            // Create the OpenSeadragon viewer with the IIIF manifest as the tile source
-            viewer = OpenSeadragon({
-                id: 'openseadragon2',
-                prefixUrl: '/openseadragon/images/',
-                crossOriginPolicy: 'Anonymous',
-                showSequenceControl: false,
-                showHomeControl: false,
-                showZoomControl: false,
-                showFullPageControl: false,
-                visibilityRatio: 0.3,
-                homeFillsViewer: false,
-                autoHideControls: true,
-                showNavigator: true,
-                navigatorPosition: 'TOP_LEFT',
-                navigatorAutoFade: true,
-                tileSources: tileSources
-            });
-        })
-        .catch(error => console.error(error));
-    
-        title2.textContent = artwork.title;
-        captionDisplay.textContent = artwork.caption;
-    
-        return viewer;
-    }
+    return viewer;
 }
 
 // Get artwork data from form and store 
@@ -272,11 +245,39 @@ window.onload = function() {
         form.addEventListener('submit', storeArtwork);
 
     } else {
-        document.getElementById("container-form").style.display = "none";
-        document.getElementById("container-404").style.display = "block";
+        let artwork; 
 
-        // On page load, get an approved artwork 
-        getStoredArtwork();
+        if (localStorage.getItem('approvedArtworks')) {
+            storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+    
+            // Convert object keys to an array
+            let keys = Object.keys(storedArtworks);
+    
+            // Generate a random index
+            let randomIndex = Math.floor(Math.random() * keys.length);
+    
+            // Get the randomly selected key
+            let randomKey = keys[randomIndex];
+    
+            // Get the value associated with the randomly selected key
+            artwork = storedArtworks[randomKey];
+        }
+
+        if (artwork) {
+            document.getElementById("container-form").style.display = "none";
+            document.getElementById("container-404").style.display = "block";
+
+            // On page load, get an approved artwork 
+            getStoredArtwork(artwork);
+        } else {
+            document.getElementById("container-form").style.display = "block";
+            document.getElementById("container-404").style.display = "none";
+    
+            // On page load, get a random artwork 
+            getArtwork();
+    
+            form.addEventListener('submit', storeArtwork);
+        }
     }
   };
 
