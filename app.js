@@ -1,5 +1,6 @@
 let viewer;
 let storedArtworks = {};
+let unstoredArtworks = {};
 const title = document.getElementById("title");
 const title2 = document.getElementById("title2");
 // Get the radio button and text input element
@@ -181,13 +182,36 @@ function getStoredArtwork(artwork) {
     return viewer;
 }
 
-// Get artwork data from form and store 
+// Get artwork data from form and store (or add to discardedArtworks)
 function storeArtwork() {
-    if (fields.no.checked) {
-        return;
-    } else {
-        console.log('stored');
+    // Get all of the fields in the form
+    let fields = form.elements;
 
+    if (fields.no.checked) {
+        // Get current unstoredArtworks
+        if (localStorage.getItem('discardedArtworks')) {
+            unstoredArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
+        }
+
+        let discardedArtwork = {};
+
+        let discardedID;
+
+        // Loop through each one and remove it from storage
+        for (let field of fields) {
+            // Only save the field if it has an ID
+            if (!field.id) return;
+    
+            if (field.id == 'artwork-id') {
+                discardedID = field.value;
+                discardedArtwork['id'] = field.value;
+            }
+        }
+    
+        unstoredArtworks[discardedID] = discardedArtwork;
+    
+        localStorage.setItem('discardedArtworks', JSON.stringify(unstoredArtworks));
+    } else {
         // Get current storedArtworks
         if (localStorage.getItem('approvedArtworks')) {
             storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
@@ -198,9 +222,6 @@ function storeArtwork() {
         let id;
 
         approvedArtwork['has_not_been_viewed_much'] = true;
-    
-        // Get all of the fields in the form
-        let fields = form.elements;
     
         // Loop through each one and remove it from storage
         for (let field of fields) {
