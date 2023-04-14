@@ -1,31 +1,45 @@
 // Get the radio button and text input element
 const radioYes = document.getElementById("yes");
 const radioNo = document.getElementById("no");
-const textInput = document.getElementById("textInput");
+const captionLabel = document.getElementById("caption-label");
 const caption = document.getElementById("caption");
-const title = document.getElementById("artwork-title");
+const title = document.getElementById("title");
+const artTitle = document.getElementById("artwork-title");
+const artID = document.getElementById("artwork-id");
+const artImgID = document.getElementById("artwork-image-id");
 const container = document.getElementById("container");
+const submit = document.getElementById("submit");
 let viewer;
+
+
+// Get the form element
+let form = document.querySelector('#form');
+
+    // Get all of the fields in the form
+    let fields = form.elements;
+    console.log(fields.yes.checked);
+
+let storedArtworks = [];
 
 // Add event listener to the radio button
 radioYes.addEventListener("click", function () {
     if (radioYes.checked) {
-        textInput.style.display = "block";
         caption.style.display = "block";
+        captionLabel.style.display = "block";
     } else {
-        textInput.style.display = "none";
         caption.style.display = "none";
+        captionLabel.style.display = "none";
     }
 });
 
 radioNo.addEventListener("click", function () {
     if (radioNo.checked) {
-        textInput.style.display = "none";
+        caption.style.display = "none";
         caption.style.display = "none";
     }
 });
 
-// Make an API call 
+// Make an API call to get a random artwork and display in OSD 
 async function getArtwork () {
     try {
         // Run an API call 
@@ -52,7 +66,9 @@ async function getArtwork () {
             }
         }
 
-        let artwork  = randomArtwork();
+       let artwork = randomArtwork();
+
+        console.log(artwork);
 
         let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
 
@@ -97,6 +113,9 @@ async function getArtwork () {
         .catch(error => console.error(error));
 
         title.textContent = artwork.title;
+        artTitle.value = artwork.title;
+        artID.value = artwork.id;
+        artImgID.value = artwork.image_id;
 
         return viewer;
 
@@ -106,8 +125,54 @@ async function getArtwork () {
     }
 }
 
+// Get artwork data from form and store 
+function storeArtwork() {
+    if (fields.no.checked) {
+        return;
+    } else {
+        let approvedArtwork = {};
+
+        approvedArtwork['has_not_been_viewed_much'] = true;
+    
+        // Get all of the fields in the form
+        let fields = form.elements;
+    
+        // Loop through each one and remove it from storage
+        for (let field of fields) {
+            // Only save the field if it has an ID
+            if (!field.id) return;
+    
+            if (field.id == 'artwork-title') {
+                approvedArtwork['title'] = field.value;
+            }
+    
+            if (field.id == 'artwork-id') {
+                approvedArtwork['id'] = field.value;
+            }
+    
+            if (field.id == 'artwork-image-id') {
+                approvedArtwork['image_id'] = field.value;
+            }
+    
+            if (field.id == 'caption') {
+                approvedArtwork['caption'] = field.value;
+            }
+            
+    
+            // Save field to localStorage
+            // localStorage.setItem(prefix + field.id, field.value);
+        }
+    
+        storedArtworks.push({approvedArtwork: approvedArtwork});
+    
+        localStorage.setItem('approvedArtworks', JSON.stringify(storedArtworks));
+    }
+}
+
 // On page load, get a random artwork 
 document.addEventListener('DOMContentLoaded', getArtwork);
+
+form.addEventListener('submit', storeArtwork);
 
 
 

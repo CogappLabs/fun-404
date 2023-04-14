@@ -16,7 +16,7 @@
 		<div id="container" class="container">
 			<h1>404 Page</h1>
 
-			<form action="">
+			<form id="form" action="">
 				<p>Are the themes of this artwork suitable for a 404 page?</p> 
 				<p>e.g. lost, missing, fail, oops, cry, sad</p>
 				<input type="radio" id="yes" name="404-image" value="yes">
@@ -24,14 +24,18 @@
 				<input type="radio" id="no" name="404-image" value="no">
 				<label for="no">No</label>
 				<br/>
-				<label for="textInput" id="caption" class="display-none">Caption:</label>
-				<input type="text" id="textInput" class="display-none">
+				<label for="caption" id="caption-label" class="display-none">Caption:</label>
+				<input type="text" id="caption" class="display-none">
 				<br/>
-				<input type="submit" value="Submit">
+				<input type="text" id="artwork-title" value="">
+				<input type="text" id="artwork-id" value="">
+				<input type="text" id="artwork-image-id" value="">
+				<input type="submit" id="submit" value="Submit">
 			  </form>
 
 			<div id="openseadragon1" style="width: 800px; height: 600px;"></div>
-			<p id="artwork-title">Artwork Title</p>
+			<p id="title">Artwork Title</p>
+
 		</div>
 
     <!-- Link to JavaScript file -->
