@@ -8,6 +8,7 @@ const radioYes = document.getElementById("yes");
 const radioNo = document.getElementById("no");
 const captionLabel = document.getElementById("caption-label");
 const caption = document.getElementById("caption");
+const sentence = document.getElementById("sentence");
 const captionDisplay = document.getElementById("caption-display");
 const artTitle = document.getElementById("artwork-title");
 const artID = document.getElementById("artwork-id");
@@ -21,11 +22,13 @@ let form = document.querySelector('#form');
 // Add event listener to the radio button
 radioYes.addEventListener("click", function () {
     if (radioYes.checked) {
-        caption.style.display = "block";
+        caption.style.display = "inline-block";
         captionLabel.style.display = "block";
+        sentence.style.display = "inline-block";
     } else {
         caption.style.display = "none";
         captionLabel.style.display = "none";
+        sentence.style.display = "none";
     }
 });
 
@@ -33,6 +36,7 @@ radioNo.addEventListener("click", function () {
     if (radioNo.checked) {
         caption.style.display = "none";
         captionLabel.style.display = "none";
+        sentence.style.display = "none";
     }
 });
 
