@@ -190,7 +190,12 @@ function storeArtwork() {
     if (fields.no.checked) {
         return;
     } else {
-        storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+        console.log('stored');
+
+        // Get current storedArtworks
+        if (localStorage.getItem('approvedArtworks')) {
+            storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+        }
 
         let approvedArtwork = {};
 
