@@ -1,27 +1,17 @@
 let viewer;
 let storedArtworks = {};
 let discardedArtworks = {};
-const title = document.getElementById("title");
-const title2 = document.getElementById("title2");
-// Get the radio button and text input element
-const radioYes = document.getElementById("yes");
-const radioNo = document.getElementById("no");
-const captionLabel = document.getElementById("caption-label");
 const caption = document.getElementById("caption");
+const captionLabel = document.getElementById("caption-label");
 const sentence = document.getElementById("sentence");
-const captionDisplay = document.getElementById("caption-display");
-const artTitle = document.getElementById("artwork-title");
-const artID = document.getElementById("artwork-id");
-const artImgID = document.getElementById("artwork-image-id");
-const submit = document.getElementById("submit");
 
 
 // Get the form element
 let form = document.querySelector('#form');
 
 // Add event listener to the radio button
-radioYes.addEventListener("click", function () {
-    if (radioYes.checked) {
+document.getElementById("yes").addEventListener("click", function () {
+    if (this.checked) {
         caption.style.display = "inline-block";
         captionLabel.style.display = "block";
         sentence.style.display = "inline-block";
@@ -32,8 +22,8 @@ radioYes.addEventListener("click", function () {
     }
 });
 
-radioNo.addEventListener("click", function () {
-    if (radioNo.checked) {
+document.getElementById("no").addEventListener("click", function () {
+    if (this.checked) {
         caption.style.display = "none";
         captionLabel.style.display = "none";
         sentence.style.display = "none";
@@ -127,10 +117,10 @@ async function getArtwork () {
         })
         .catch(error => console.error(error));
 
-        title.textContent = artwork.title;
-        artTitle.value = artwork.title;
-        artID.value = artwork.id;
-        artImgID.value = artwork.image_id;
+        document.getElementById("title").textContent = artwork.title;
+        document.getElementById("artwork-title").value = artwork.title;
+        document.getElementById("artwork-id").value = artwork.id;
+        document.getElementById("artwork-image-id").value = artwork.image_id;
 
         return viewer;
 
@@ -183,8 +173,8 @@ function getStoredArtwork(artwork) {
     })
     .catch(error => console.error(error));
 
-    title2.textContent = artwork.title;
-    captionDisplay.textContent = artwork.caption;
+    document.getElementById("title2").textContent = artwork.title;
+    document.getElementById("caption-display").textContent = artwork.caption;
 
     return viewer;
 }
