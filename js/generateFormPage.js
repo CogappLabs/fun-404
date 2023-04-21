@@ -9,9 +9,9 @@ export function generateFormPage(approvedArtworks, discardedArtworks) {
     document.getElementById("container-form").style.display = "block";
     document.getElementById("container-404").style.display = "none";
 
-    // Get a random artwork for review
+    // Get a new artwork for review
     getNewArtwork(approvedArtworks, discardedArtworks);
 
-    // Listen for form submission
+    // Store or discard the artwork based on the users form submission
     form.addEventListener('submit', storeOrDiscardArtwork.bind(approvedArtworks, discardedArtworks));
 }

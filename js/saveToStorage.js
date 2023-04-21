@@ -1,5 +1,5 @@
 // Add an artwork to the approvedArtworks or discardedArtworks
-export function storeOrDiscard(string, object, fields) {
+export function saveToStorage(string, object, fields) {
     // Get current approvedArtworks
     if (localStorage.getItem(string)) {
         object = JSON.parse(localStorage.getItem(string));
