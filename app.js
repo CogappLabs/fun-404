@@ -1,5 +1,5 @@
 let viewer;
-let storedArtworks = {};
+let approvedArtworks = {};
 let discardedArtworks = {};
 let caption = document.getElementById("caption");
 let captionLabel = document.getElementById("caption-label");
@@ -31,17 +31,17 @@ document.getElementById("no").addEventListener("click", function () {
 });
 
 
-// Get a random artwork that isn't in storedArtworks or discardedArtworks 
-function randomArtwork(data, storedArtworks, discardedArtworks) {
+// Get a random artwork that isn't in approvedArtworks or discardedArtworks 
+function randomArtwork(data, approvedArtworks, discardedArtworks) {
     let random = data.data[Math.floor(Math.random()*data.data.length)];
 
-    // Check that the image_id isn't the archive image and make sure the ID isn't already a key in storedArtworks
+    // Check that the image_id isn't the archive image and make sure the ID isn't already a key in approvedArtworks
     if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' 
-        && (storedArtworks == null || !storedArtworks.hasOwnProperty(random.id)) 
+        && (approvedArtworks == null || !approvedArtworks.hasOwnProperty(random.id)) 
         && (discardedArtworks == null || !discardedArtworks.hasOwnProperty(random.id))) {
             return random;
         } else {
-            return randomArtwork(data, storedArtworks, discardedArtworks);
+            return randomArtwork(data, approvedArtworks, discardedArtworks);
         }
 }
 
@@ -49,9 +49,9 @@ function randomArtwork(data, storedArtworks, discardedArtworks) {
 // Make an API call to get a random artwork and display in OSD 
 async function getArtwork () {
     try {
-        // Get current storedArtworks
+        // Get current approvedArtworks
         if (localStorage.getItem('approvedArtworks')) {
-            storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+            approvedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
         }
 
         // Get current discardedArtworks
@@ -71,7 +71,7 @@ async function getArtwork () {
         let data = await response.json();
 
         // Assign a randomArtwork 
-        let artwork = randomArtwork(data, storedArtworks, discardedArtworks);
+        let artwork = randomArtwork(data, approvedArtworks, discardedArtworks);
 
         // Construct the manifest url 
         let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
@@ -185,7 +185,7 @@ function getStoredArtwork(artwork) {
 }
 
 
-// Todo: There is some repitition in this? Can you get rid of? Should I change storedArtworks to approvedArtworks?
+// Todo: There is some repitition in this? Can you get rid of?
 // Get artwork data from form and store or discard
 function storeArtwork() {
     // Get all of the fields in the form
@@ -221,9 +221,9 @@ function storeArtwork() {
     } 
     // If the yes radio button is checked 
     else {
-        // Get current storedArtworks
+        // Get current approvedArtworks
         if (localStorage.getItem('approvedArtworks')) {
-            storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+            approvedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
         }
 
         // Create emtpy object and empty variable
@@ -254,10 +254,10 @@ function storeArtwork() {
         }
     
         // Add this approved artwork to the stored artworks object 
-        storedArtworks[id] = approvedArtwork;
+        approvedArtworks[id] = approvedArtwork;
     
         // Save stored artworks in local storage
-        localStorage.setItem('approvedArtworks', JSON.stringify(storedArtworks));
+        localStorage.setItem('approvedArtworks', JSON.stringify(approvedArtworks));
     }
 }
 
@@ -285,10 +285,10 @@ window.onload = function() {
 
         // If there are approved artworks, get a random artwork
         if (localStorage.getItem('approvedArtworks')) {
-            storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
+            approvedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
     
             // Convert object keys to an array
-            let keys = Object.keys(storedArtworks);
+            let keys = Object.keys(approvedArtworks);
     
             // Generate a random index
             let randomIndex = Math.floor(Math.random() * keys.length);
@@ -297,7 +297,7 @@ window.onload = function() {
             let randomKey = keys[randomIndex];
     
             // Get the value associated with the randomly selected key
-            artwork = storedArtworks[randomKey];
+            artwork = approvedArtworks[randomKey];
         }
 
         // If there's an artwork, display it
