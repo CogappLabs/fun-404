@@ -244,6 +244,19 @@ function storeOrDiscardArtwork() {
 }
 
 
+// Generate the form page
+function generateFormPage() {
+    document.getElementById("container-form").style.display = "block";
+    document.getElementById("container-404").style.display = "none";
+
+    // Get a random artwork for review
+    getArtwork();
+
+    // Listen for form submission
+    form.addEventListener('submit', storeOrDiscardArtwork);
+}
+
+
 // On page load, randomly show either the form or a 404 page
 window.onload = function() {
     // Generate a random number (0 or 1)
@@ -251,15 +264,7 @@ window.onload = function() {
 
     // Show the form
     if (randomNum === 0) {
-        document.getElementById("container-form").style.display = "block";
-        document.getElementById("container-404").style.display = "none";
-
-        // Get a random artwork for review
-        getArtwork();
-
-        // Listen for form submission
-        form.addEventListener('submit', storeOrDiscardArtwork);
-
+        generateFormPage();
     } 
     // Show a 404 page
     else {
@@ -290,17 +295,9 @@ window.onload = function() {
             // Generate an OSD viewer for the approved artwork  
             getStoredArtwork(artwork);
         } 
-        // Todo: Extract this as it's reused
         // If there aren't any approved artworks, show the form instead
         else {
-            document.getElementById("container-form").style.display = "block";
-            document.getElementById("container-404").style.display = "none";
-    
-            // Get a random artwork for review 
-            getArtwork();
-    
-            // Listen for form submission
-            form.addEventListener('submit', storeOrDiscardArtwork);
+            generateFormPage();
         }
     }
   };
