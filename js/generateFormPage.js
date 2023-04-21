@@ -1,4 +1,4 @@
-import { getArtwork } from './getArtwork.js';
+import { getNewArtwork } from './getNewArtwork.js';
 import { storeOrDiscardArtwork } from './storeOrDiscardArtwork.js';
 
 // Generate the form page
@@ -10,7 +10,7 @@ export function generateFormPage(approvedArtworks, discardedArtworks) {
     document.getElementById("container-404").style.display = "none";
 
     // Get a random artwork for review
-    getArtwork(approvedArtworks, discardedArtworks);
+    getNewArtwork(approvedArtworks, discardedArtworks);
 
     // Listen for form submission
     form.addEventListener('submit', storeOrDiscardArtwork.bind(approvedArtworks, discardedArtworks));

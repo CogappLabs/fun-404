@@ -1,5 +1,5 @@
 import { generateFormPage } from './generateFormPage.js';
-import { getStoredArtwork } from './getStoredArtwork.js';
+import { getApprovedArtwork } from './getApprovedArtwork.js';
 
 // Set up empty global variables
 let approvedArtworks = {};
@@ -68,7 +68,7 @@ window.onload = function() {
             document.getElementById("container-404").style.display = "block";
 
             // Generate an OSD viewer for the approved artwork  
-            getStoredArtwork(artwork);
+            getApprovedArtwork(artwork);
         } 
         // If there aren't any approved artworks, show the form instead
         else {

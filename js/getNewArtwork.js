@@ -2,7 +2,7 @@ import { generateOSDViewer } from './generateOSDViewer.js';
 import { randomArtwork } from './randomArtwork.js';
 
 // Make an API call to get a random artwork and display in OSD 
-export async function getArtwork (approvedArtworks, discardedArtworks) {
+export async function getNewArtwork (approvedArtworks, discardedArtworks) {
     try {
         // Get current approvedArtworks
         if (localStorage.getItem('approvedArtworks')) {
