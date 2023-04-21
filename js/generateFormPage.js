@@ -1,5 +1,5 @@
 import { getArtwork } from './getArtwork.js';
-import { storeOrDiscardArtwork } from './app.js';
+import { storeOrDiscardArtwork } from './storeOrDiscardArtwork.js';
 
 // Generate the form page
 export function generateFormPage(approvedArtworks, discardedArtworks) {
@@ -13,5 +13,5 @@ export function generateFormPage(approvedArtworks, discardedArtworks) {
     getArtwork(approvedArtworks, discardedArtworks);
 
     // Listen for form submission
-    form.addEventListener('submit', storeOrDiscardArtwork);
+    form.addEventListener('submit', storeOrDiscardArtwork.bind(approvedArtworks, discardedArtworks));
 }

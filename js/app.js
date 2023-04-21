@@ -1,4 +1,3 @@
-import { storeOrDiscard } from './storeOrDiscard.js';
 import { generateFormPage } from './generateFormPage.js';
 import { getStoredArtwork } from './getStoredArtwork.js';
 
@@ -31,25 +30,6 @@ document.getElementById("no").addEventListener("click", function () {
         sentence.style.display = "none";
     }
 });
-
-
-// Get artwork data from form and store or discard
-export function storeOrDiscardArtwork() {
-    // Get the form element
-    let form = document.querySelector('#form');
-
-    // Get all of the fields in the form
-    let fields = form.elements;
-
-    // If the no radio button is checked...
-    if (fields.no.checked) {
-        storeOrDiscard('discardedArtworks', discardedArtworks, fields);
-    } 
-    // If the yes radio button is checked 
-    else {
-        storeOrDiscard('approvedArtworks', approvedArtworks, fields);
-    }
-}
 
 
 // On page load, randomly show either the form or a 404 page
