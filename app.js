@@ -1,6 +1,6 @@
 let viewer;
 let storedArtworks = {};
-let unstoredArtworks = {};
+let discardedArtworks = {};
 const title = document.getElementById("title");
 const title2 = document.getElementById("title2");
 // Get the radio button and text input element
@@ -47,6 +47,11 @@ async function getArtwork () {
         if (localStorage.getItem('approvedArtworks')) {
             storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
         }
+
+        // Get current discardedArtworks
+        if (localStorage.getItem('discardedArtworks')) {
+            discardedArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
+        }
         
 
         // Run an API call 
@@ -67,15 +72,13 @@ async function getArtwork () {
             let random = data.data[Math.floor(Math.random()*data.data.length)];
 
             // Check that the image_id isn't the archive image and make sure the ID isn't already a key in storedArtworks
-            if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' && storedArtworks != null) {
-                if (!storedArtworks.hasOwnProperty(random.id)) {
+            if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' 
+                && (storedArtworks == null || !storedArtworks.hasOwnProperty(random.id)) 
+                && (discardedArtworks == null || !discardedArtworks.hasOwnProperty(random.id))) {
                     return random;
+                } else {
+                    return randomArtwork();
                 }
-            } else if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' && storedArtworks == null) {
-                return random;
-            } else {
-                return randomArtwork();
-            }
         }
 
         let artwork = randomArtwork();
@@ -192,9 +195,9 @@ function storeArtwork() {
     let fields = form.elements;
 
     if (fields.no.checked) {
-        // Get current unstoredArtworks
+        // Get current discardedArtworks
         if (localStorage.getItem('discardedArtworks')) {
-            unstoredArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
+            discardedArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
         }
 
         let discardedArtwork = {};
@@ -212,9 +215,9 @@ function storeArtwork() {
             }
         }
     
-        unstoredArtworks[discardedID] = discardedArtwork;
+        discardedArtworks[discardedID] = discardedArtwork;
     
-        localStorage.setItem('discardedArtworks', JSON.stringify(unstoredArtworks));
+        localStorage.setItem('discardedArtworks', JSON.stringify(discardedArtworks));
     } else {
         // Get current storedArtworks
         if (localStorage.getItem('approvedArtworks')) {
