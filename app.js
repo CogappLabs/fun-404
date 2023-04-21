@@ -185,79 +185,61 @@ function getStoredArtwork(artwork) {
 }
 
 
-// Todo: There is some repitition in this? Can you get rid of?
+// Add an artwork to the approvedArtworks or discardedArtworks
+function storeOrDiscard(string, object, fields) {
+    // Get current approvedArtworks
+    if (localStorage.getItem(string)) {
+        object = JSON.parse(localStorage.getItem(string));
+    }
+
+    // Create emtpy object and empty variable
+    let artwork = {};
+    let id;
+
+    // Loop through each field and assign relevant values to approvedArtwork and id
+    for (let field of fields) {
+        // Only save the field if it has an ID
+        if (!field.id) return;
+
+        if (field.id == 'artwork-title') {
+            artwork['title'] = field.value;
+        }
+
+        if (field.id == 'artwork-id') {
+            id = field.value;
+            artwork['id'] = field.value;
+        }
+
+        if (field.id == 'artwork-image-id') {
+            artwork['image_id'] = field.value;
+        }
+
+        // Todo: Is there a way to prevent caption being a key on discardedArtworks?
+        if (field.id == 'caption') {
+            artwork['caption'] = field.value;
+        }
+    }
+
+    // Add this approved artwork to the stored artworks object 
+    object[id] = artwork;
+
+    // Save stored artworks in local storage
+    localStorage.setItem(string, JSON.stringify(object));
+}
+
+
 // Get artwork data from form and store or discard
-function storeArtwork() {
+function storeOrDiscardArtwork() {
     // Get all of the fields in the form
     let fields = form.elements;
 
     // If the no radio button is checked...
     if (fields.no.checked) {
-        // Get current discardedArtworks
-        if (localStorage.getItem('discardedArtworks')) {
-            discardedArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
-        }
-
-        // Create emtpy object and empty variable
-        let discardedArtwork = {};
-        let discardedID;
-
-        // Loop through each field and assign relevant values to discardedArtwork and discardedID
-        for (let field of fields) {
-            // Only save the field if it has an ID
-            if (!field.id) return;
-    
-            if (field.id == 'artwork-id') {
-                discardedID = field.value;
-                discardedArtwork['id'] = field.value;
-            }
-        }
-    
-        // Add this discarded artwork to the discarded artworks object 
-        discardedArtworks[discardedID] = discardedArtwork;
-    
-        // Save discarded artworks in local storage
-        localStorage.setItem('discardedArtworks', JSON.stringify(discardedArtworks));
+        storeOrDiscard('discardedArtworks', discardedArtworks, fields);
     } 
     // If the yes radio button is checked 
     else {
-        // Get current approvedArtworks
-        if (localStorage.getItem('approvedArtworks')) {
-            approvedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
-        }
-
-        // Create emtpy object and empty variable
-        let approvedArtwork = {};
-        let id;
-    
-        // Loop through each field and assign relevant values to approvedArtwork and id
-        for (let field of fields) {
-            // Only save the field if it has an ID
-            if (!field.id) return;
-    
-            if (field.id == 'artwork-title') {
-                approvedArtwork['title'] = field.value;
-            }
-    
-            if (field.id == 'artwork-id') {
-                id = field.value;
-                approvedArtwork['id'] = field.value;
-            }
-    
-            if (field.id == 'artwork-image-id') {
-                approvedArtwork['image_id'] = field.value;
-            }
-    
-            if (field.id == 'caption') {
-                approvedArtwork['caption'] = field.value;
-            }
-        }
-    
-        // Add this approved artwork to the stored artworks object 
-        approvedArtworks[id] = approvedArtwork;
-    
-        // Save stored artworks in local storage
-        localStorage.setItem('approvedArtworks', JSON.stringify(approvedArtworks));
+        storeOrDiscard('approvedArtworks', approvedArtworks, fields);
     }
 }
 
@@ -276,7 +258,7 @@ window.onload = function() {
         getArtwork();
 
         // Listen for form submission
-        form.addEventListener('submit', storeArtwork);
+        form.addEventListener('submit', storeOrDiscardArtwork);
 
     } 
     // Show a 404 page
@@ -318,7 +300,7 @@ window.onload = function() {
             getArtwork();
     
             // Listen for form submission
-            form.addEventListener('submit', storeArtwork);
+            form.addEventListener('submit', storeOrDiscardArtwork);
         }
     }
   };
