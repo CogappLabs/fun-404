@@ -1,15 +1,15 @@
 let viewer;
 let storedArtworks = {};
 let discardedArtworks = {};
-const caption = document.getElementById("caption");
-const captionLabel = document.getElementById("caption-label");
-const sentence = document.getElementById("sentence");
+let caption = document.getElementById("caption");
+let captionLabel = document.getElementById("caption-label");
+let sentence = document.getElementById("sentence");
 
 
 // Get the form element
 let form = document.querySelector('#form');
 
-// Add event listener to the radio button
+// Show or hide caption input based on radio button
 document.getElementById("yes").addEventListener("click", function () {
     if (this.checked) {
         caption.style.display = "inline-block";
@@ -30,6 +30,22 @@ document.getElementById("no").addEventListener("click", function () {
     }
 });
 
+
+// Get a random artwork that isn't in storedArtworks or discardedArtworks 
+function randomArtwork(data, storedArtworks, discardedArtworks) {
+    let random = data.data[Math.floor(Math.random()*data.data.length)];
+
+    // Check that the image_id isn't the archive image and make sure the ID isn't already a key in storedArtworks
+    if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' 
+        && (storedArtworks == null || !storedArtworks.hasOwnProperty(random.id)) 
+        && (discardedArtworks == null || !discardedArtworks.hasOwnProperty(random.id))) {
+            return random;
+        } else {
+            return randomArtwork(data, storedArtworks, discardedArtworks);
+        }
+}
+
+
 // Make an API call to get a random artwork and display in OSD 
 async function getArtwork () {
     try {
@@ -43,12 +59,8 @@ async function getArtwork () {
             discardedArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
         }
         
-
-        // Run an API call 
-        // Create an empty variable to store the response in
-        let response;
-
-        response = await fetch('https://api.artic.edu/api/v1/artworks/search?query[term][has_not_been_viewed_much]=true&limit=100&page=10&fields=has_not_been_viewed_much,title,image_id,id');
+        // Store the API response in a variable
+        let response = await fetch('https://api.artic.edu/api/v1/artworks/search?query[term][has_not_been_viewed_much]=true&limit=100&page=10&fields=has_not_been_viewed_much,title,image_id,id');
 
         // If the call failed, throw an error
         if (!response.ok) {
@@ -58,23 +70,10 @@ async function getArtwork () {
         // Otherwise, get the post JSON
         let data = await response.json();
 
-        function randomArtwork() {
-            let random = data.data[Math.floor(Math.random()*data.data.length)];
+        // Assign a randomArtwork 
+        let artwork = randomArtwork(data, storedArtworks, discardedArtworks);
 
-            // Check that the image_id isn't the archive image and make sure the ID isn't already a key in storedArtworks
-            if (random.image_id != '342b2214-04d5-de63-b577-55a08a618960' 
-                && (storedArtworks == null || !storedArtworks.hasOwnProperty(random.id)) 
-                && (discardedArtworks == null || !discardedArtworks.hasOwnProperty(random.id))) {
-                    return random;
-                } else {
-                    return randomArtwork();
-                }
-        }
-
-        let artwork = randomArtwork();
-
-        console.log(artwork);
-
+        // Construct the manifest url 
         let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
 
         // Fetch the IIIF manifest
@@ -117,6 +116,7 @@ async function getArtwork () {
         })
         .catch(error => console.error(error));
 
+        // Fill in the image title and hidden form fields 
         document.getElementById("title").textContent = artwork.title;
         document.getElementById("artwork-title").value = artwork.title;
         document.getElementById("artwork-id").value = artwork.id;
@@ -130,7 +130,11 @@ async function getArtwork () {
     }
 }
 
+
+// Todo: A lot of this is the same as another function. Can you extract?
+// Generate an OSD viewer for an approved artwork to show on a 404 page
 function getStoredArtwork(artwork) {
+    // Construct the manifest url
     let manifestUrl = 'https://api.artic.edu/api/v1/artworks/' + artwork.id + '/manifest.json';
 
     // Fetch the IIIF manifest
@@ -173,28 +177,32 @@ function getStoredArtwork(artwork) {
     })
     .catch(error => console.error(error));
 
+    // Fill in the image title and caption 
     document.getElementById("title2").textContent = artwork.title;
     document.getElementById("caption-display").textContent = artwork.caption;
 
     return viewer;
 }
 
-// Get artwork data from form and store (or add to discardedArtworks)
+
+// Todo: There is some repitition in this? Can you get rid of? Should I change storedArtworks to approvedArtworks?
+// Get artwork data from form and store or discard
 function storeArtwork() {
     // Get all of the fields in the form
     let fields = form.elements;
 
+    // If the no radio button is checked...
     if (fields.no.checked) {
         // Get current discardedArtworks
         if (localStorage.getItem('discardedArtworks')) {
             discardedArtworks = JSON.parse(localStorage.getItem('discardedArtworks'));
         }
 
+        // Create emtpy object and empty variable
         let discardedArtwork = {};
-
         let discardedID;
 
-        // Loop through each one and remove it from storage
+        // Loop through each field and assign relevant values to discardedArtwork and discardedID
         for (let field of fields) {
             // Only save the field if it has an ID
             if (!field.id) return;
@@ -205,22 +213,24 @@ function storeArtwork() {
             }
         }
     
+        // Add this discarded artwork to the discarded artworks object 
         discardedArtworks[discardedID] = discardedArtwork;
     
+        // Save discarded artworks in local storage
         localStorage.setItem('discardedArtworks', JSON.stringify(discardedArtworks));
-    } else {
+    } 
+    // If the yes radio button is checked 
+    else {
         // Get current storedArtworks
         if (localStorage.getItem('approvedArtworks')) {
             storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
         }
 
+        // Create emtpy object and empty variable
         let approvedArtwork = {};
-
         let id;
-
-        approvedArtwork['has_not_been_viewed_much'] = true;
     
-        // Loop through each one and remove it from storage
+        // Loop through each field and assign relevant values to approvedArtwork and id
         for (let field of fields) {
             // Only save the field if it has an ID
             if (!field.id) return;
@@ -243,29 +253,37 @@ function storeArtwork() {
             }
         }
     
+        // Add this approved artwork to the stored artworks object 
         storedArtworks[id] = approvedArtwork;
     
+        // Save stored artworks in local storage
         localStorage.setItem('approvedArtworks', JSON.stringify(storedArtworks));
     }
 }
 
+
+// On page load, randomly show either the form or a 404 page
 window.onload = function() {
     // Generate a random number (0 or 1)
     const randomNum = Math.floor(Math.random() * 2);
 
-    // Show/hide pages based on the random number
+    // Show the form
     if (randomNum === 0) {
         document.getElementById("container-form").style.display = "block";
         document.getElementById("container-404").style.display = "none";
 
-        // On page load, get a random artwork 
+        // Get a random artwork for review
         getArtwork();
 
+        // Listen for form submission
         form.addEventListener('submit', storeArtwork);
 
-    } else {
+    } 
+    // Show a 404 page
+    else {
         let artwork; 
 
+        // If there are approved artworks, get a random artwork
         if (localStorage.getItem('approvedArtworks')) {
             storedArtworks = JSON.parse(localStorage.getItem('approvedArtworks'));
     
@@ -282,19 +300,24 @@ window.onload = function() {
             artwork = storedArtworks[randomKey];
         }
 
+        // If there's an artwork, display it
         if (artwork) {
             document.getElementById("container-form").style.display = "none";
             document.getElementById("container-404").style.display = "block";
 
-            // On page load, get an approved artwork 
+            // Generate an OSD viewer for the approved artwork  
             getStoredArtwork(artwork);
-        } else {
+        } 
+        // Todo: Extract this as it's reused
+        // If there aren't any approved artworks, show the form instead
+        else {
             document.getElementById("container-form").style.display = "block";
             document.getElementById("container-404").style.display = "none";
     
-            // On page load, get a random artwork 
+            // Get a random artwork for review 
             getArtwork();
     
+            // Listen for form submission
             form.addEventListener('submit', storeArtwork);
         }
     }
