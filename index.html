@@ -2,23 +2,20 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>404</title>
+		<title>404 Page</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!--CSS Style Sheet-->
-    <link rel="stylesheet" href="style.css" type="text/css">
-
-	<!-- jQuery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
+		<!--CSS Style Sheet-->
+		<link rel="stylesheet" href="style.css" type="text/css">
 	</head>
 	<body>
 		<div id="container-form" class="container">
 			<h1>404 Page</h1>
 
-			<form id="form" class="mb-3" action="">
-				<p>Are the themes of this artwork suitable for a 404 page?</p> 
-				<p>e.g. lost, missing, fail, oops, cry, sad</p>
+			<p>Are the themes of this artwork suitable for a 404 page?</p> 
+			<p>e.g. lost, missing, fail, oops, cry, sad</p>
+
+			<form id="form" class="mb-3">
 				<input type="radio" id="yes" name="404-image" value="yes">
 				<label for="yes">Yes</label>
 				<input type="radio" id="no" name="404-image" value="no">
@@ -32,21 +29,23 @@
 				<input type="text" id="artwork-id" value="" class="display-none">
 				<input type="text" id="artwork-image-id" value="" class="display-none">
 				<input type="submit" id="submit" value="Submit">
-			  </form>
+			</form>
 
-			<div id="openseadragon1" style="width: 800px; height: 600px;"></div>
-			<p id="title">Artwork Title</p>
-
+			<figure>
+				<div id="openseadragon1" style="width: 800px; height: 600px;" class="mb-1"></div>
+				<figcaption id="title"></figcaption>
+			</figure>
 		</div>
 
 		<div id="container-404" class="container">
 			<h1>404 Page</h1>
 
-			<p class="mb-3"><span id="caption-display">Caption</span> Sorry, we can't find that page. You'll find loads to explore on the home page.</p>
+			<p class="mb-3"><span id="caption-display"></span> Sorry, we can't find that page. You'll find loads to explore on the home page.</p>
 
-			<div id="openseadragon2" style="width: 800px; height: 600px;"></div>
-			<p id="title2">Artwork Title</p>
-
+			<figure>
+				<div id="openseadragon2" style="width: 800px; height: 600px;" class="mb-1"></div>
+				<figcaption id="title2"></figcaption>
+			</figure>
 		</div>
 
     <!-- Link to JavaScript file -->
