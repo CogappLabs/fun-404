@@ -27,7 +27,6 @@ export function saveToStorage(string, object, fields) {
             artwork['image_id'] = field.value;
         }
 
-        // Todo: Is there a way to prevent caption being a key on discardedArtworks?
         if (field.id == 'caption') {
             artwork['caption'] = field.value;
         }
