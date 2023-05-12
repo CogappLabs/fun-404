@@ -1,3 +1,5 @@
+import OpenSeadragon from 'openseadragon'
+
 // Generate an OSD viewer for a provided artwork, and display in the relevant container
 export function generateOSDViewer(artwork, id) {
     // Construct the manifest url 
