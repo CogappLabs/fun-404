@@ -15,7 +15,7 @@ export async function getNewArtwork (approvedArtworks, discardedArtworks) {
         }
         
         // Store the API response in a variable
-        let response = await fetch('https://api.artic.edu/api/v1/artworks/search?query[term][has_not_been_viewed_much]=true&limit=100&page=10&fields=has_not_been_viewed_much,title,image_id,id');
+        let response = await fetch('https://api.artic.edu/api/v1/artworks/search?query[bool][must][][term][is_public_domain]=true&query[bool][must][][term][has_not_been_viewed_much]=true&limit=50&fields=has_not_been_viewed_much,is_public_domain,title,image_id,id');
 
         // If the call failed, throw an error
         if (!response.ok) {
@@ -24,6 +24,8 @@ export async function getNewArtwork (approvedArtworks, discardedArtworks) {
 
         // Otherwise, get the post JSON
         let data = await response.json();
+
+        console.log(data);
 
         // Assign a randomArtwork 
         let artwork = randomArtwork(data, approvedArtworks, discardedArtworks);
